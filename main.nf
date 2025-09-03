@@ -1,7 +1,6 @@
 #!/usr/bin/env nextflow
 
 // Include process definitions
-include { GetHifiReads } from './bin/GetHifiReads'
 include { runHifiasm } from './bin/Hifiasm'
 include { gfa2fa } from './bin/Hifiasm'
 include { AlignHicReads } from './bin/Bwamem2'
@@ -11,74 +10,67 @@ include { runBusco } from './bin/Busco'
 include { GenerateContactMap } from './bin/Juicer'
 
 workflow {
-    // Get HiFi reads
-    GetHifiReads(params.hifi_reads)
+    // Create HiFi reads channel using channel factory
+    Channel
+        .fromPath("${params.hifi_reads}/*.fastq.gz")
+        .filter { !it.name.contains('fail') }  // Exclude files with 'fail'
+        .filter { !it.name.contains('gz.') }   // Exclude stat files like .gz.md5
+        .collect()
+        .set { hifi_reads_ch }
     
     // Run hifiasm to generate assemblies
     runHifiasm(
         params.species_id,
-        GetHifiReads.out.hifi_reads,
+        hifi_reads_ch,
         params.hic1,
         params.hic2
     )
+
+    // Create three separate channels and add metadata to each
+    // We create a tuple of the form: [meta_id, file]
+    primary_gfa_ch = runHifiasm.out.primary_gfa.map { gfa -> ['primary', gfa] }
+    hap1_gfa_ch    = runHifiasm.out.hap1_gfa.map { gfa -> ['hap1', gfa] }
+    hap2_gfa_ch    = runHifiasm.out.hap2_gfa.map { gfa -> ['hap2', gfa] }
+
+    // Merge the three channels into a single channel for downstream processing
+    all_gfa_ch = primary_gfa_ch.concat(hap1_gfa_ch, hap2_gfa_ch)
     
-    // Convert GFA files to FASTA for all three assemblies
-    gfa2fa(runHifiasm.out.primary_gfa)
-    gfa2fa(runHifiasm.out.hap1_gfa)
-    gfa2fa(runHifiasm.out.hap2_gfa)
+    // Convert GFA files to FASTA
+    gfa2fa(all_gfa_ch)
     
-    // Collect all FASTA files for parallel processing
-    all_fastas = Channel.of(
-        gfa2fa.out.fasta
-    ).flatten()
-    
-    // Align Hi-C reads to all three assemblies in parallel
+    // Align Hi-C reads
     AlignHicReads(
         params.hic1,
         params.hic2,
-        all_fastas
+        gfa2fa.out.fasta_tuple
     )
     
-    // Scaffold all three assemblies with YaHS in parallel
+    // Scaffold all three assemblies
     ScaffoldWithYahs(
-        all_fastas,
-        AlignHicReads.out.aligned_bam
+        AlignHicReads.out.aligned_tuple
     )
-    
-    // Generate contact maps for all scaffolded assemblies
+
+    // Generate contact maps
     GenerateContactMap(
-        ScaffoldWithYahs.out.scaffolded_assembly,
+        ScaffoldWithYahs.out.scaffolded_assembly_tuple,
         ScaffoldWithYahs.out.scaffolded_assembly_fai,
         ScaffoldWithYahs.out.yahs_bin,
         ScaffoldWithYahs.out.yahs_agp
     )
     
-    // Run QUAST on all scaffolded assemblies in parallel
+    // Run QUAST and BUSCO on the final scaffolded assemblies
+    scaffolded_ch = ScaffoldWithYahs.out.scaffolded_assembly_tuple
+
     runQuast(
-        ScaffoldWithYahs.out.scaffolded_assembly,
-        "${params.species_id}_primary_scaffolded"
-    )
-    runQuast(
-        ScaffoldWithYahs.out.scaffolded_assembly,
-        "${params.species_id}_hap1_scaffolded"
-    )
-    runQuast(
-        ScaffoldWithYahs.out.scaffolded_assembly,
-        "${params.species_id}_hap2_scaffolded"
+        scaffolded_ch.map { meta, assembly ->
+            [ "${params.species_id}_${meta}_scaffolded", assembly ]
+        }
     )
     
-    // Run BUSCO on all scaffolded assemblies in parallel
     runBusco(
-        ScaffoldWithYahs.out.scaffolded_assembly,
-        "${params.species_id}_primary_scaffolded"
-    )
-    runBusco(
-        ScaffoldWithYahs.out.scaffolded_assembly,
-        "${params.species_id}_hap1_scaffolded"
-    )
-    runBusco(
-        ScaffoldWithYahs.out.scaffolded_assembly,
-        "${params.species_id}_hap2_scaffolded"
+        scaffolded_ch.map { meta, assembly ->
+            [ "${params.species_id}_${meta}_scaffolded", assembly ]
+        }
     )
 }
 
