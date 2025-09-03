@@ -22,13 +22,13 @@ process runHifiasm {
 
 process gfa2fa { 
     input:
-    path gfa_file
+    tuple val(meta_id), path(gfa_file)
 
     output:
-    path "${gfa_file.getBaseName()}.fa"
+    tuple val(meta_id), path("${meta_id}.fa"), emit: fasta_tuple
 
     script:
     """
-    awk '/^S/{print ">"\$2;print \$3}' ${gfa_file} > ${gfa_file.getBaseName()}.fa
+    awk '/^S/{print ">"\$2;print \$3}' ${gfa_file} > ${meta_id}.fa
     """
 }
