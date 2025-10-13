@@ -1,15 +1,13 @@
-conda.enabled = true
-
 params { 
     // required 
-    hifi_reads = '/data2/work/Notothenioids/Lsquam3/PacBio_CCS'
-    hic1 = '/data2/work/Notothenioids/Lsquam3/Lsquam3_HiC_data/Lsquam3_GCTACTCT-CTCGAACA_L004_R1_001.fastq.gz'
-    hic2 = '/data2/work/Notothenioids/Lsquam3/Lsquam3_HiC_data/Lsquam3_GCTACTCT-CTCGAACA_L004_R2_001.fastq.gz'
-    specimen_id = 'Lsquam3'
-	taxid = '101496'
+    hifi_reads = null // Path to hifi reads directory, required
+    hic1 = null // Path to hic read pair 1, required
+    hic2 = null // Path to hic read pair 2, required
+    specimen_id = null // species id for eg. "dmaw12" for D. mawsoni, required
+	taxid = null // ncbi taxonomy id for fcs
 
     nthreads = 18
-    est_ref_size = 1000000000 // for quast, i might remove this in the future
+    est_ref_size = 800000000 // for quast, i might remove this in the future
     
     // Tool paths
     yahs = '/data2/work/local/yahs' // Path to YaHS installation
@@ -28,9 +26,4 @@ params {
     
     // Output directory
     outdir = './results'
-}
-
-executor {
-	name = 'local'
-    cpus = 24 // Limit local executor to 4 CPUs
 }

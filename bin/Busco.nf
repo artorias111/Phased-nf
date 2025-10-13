@@ -1,11 +1,10 @@
 process runBusco {
     conda params.busco_conda
         
-    publishDir { "${params.outdir}/${asm_name}_busco_results" }, mode: 'copy'
+    publishDir { "${params.outdir}/${asm_name}_busco_results" }, mode: 'symlink'
 
     input:
-    path genome_asm
-    val asm_name
+    tuple val(asm_name), path(genome_asm)
 
     output:
     path "${asm_name}_BUSCO", emit :busco_results

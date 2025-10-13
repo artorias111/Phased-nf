@@ -6,9 +6,9 @@ process runHifiasm {
     path hic2
 
     output:
-    path "${species_id}.p_ctg.gfa", emit: primary_gfa
-    path "${species_id}.hap1.p_ctg.gfa", emit: hap1_gfa
-    path "${species_id}.hap2.p_ctg.gfa", emit: hap2_gfa
+    path "${species_id}.hic.p_ctg.gfa", emit: p_gfa
+    path "${species_id}.hic.hap1.p_ctg.gfa", emit: hap1_gfa
+    path "${species_id}.hic.hap2.p_ctg.gfa", emit: hap2_gfa
 
     script:
     """
