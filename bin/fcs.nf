@@ -1,4 +1,6 @@
 process screen_contaminants_adapters {
+    publishDir "${params.outdir}/fcs", mode: 'symlink'
+    
     stageInMode 'copy'
     conda params.nextflow_env
     input:

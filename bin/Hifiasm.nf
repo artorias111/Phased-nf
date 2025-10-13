@@ -1,4 +1,5 @@
 process runHifiasm { 
+    publishDir "${params.outdir}/hifiasm", mode: 'symlink'
     input:
     val species_id
     path hifi_reads
@@ -9,6 +10,7 @@ process runHifiasm {
     path "${species_id}.hic.p_ctg.gfa", emit: p_gfa
     path "${species_id}.hic.hap1.p_ctg.gfa", emit: hap1_gfa
     path "${species_id}.hic.hap2.p_ctg.gfa", emit: hap2_gfa
+    path "hifiasm.kmer.log", emit: hifiasm_log
 
     script:
     """
@@ -21,6 +23,8 @@ process runHifiasm {
 }
 
 process gfa2fa { 
+    publishDir "${params.outdir}/hifiasm", mode: 'symlink'
+
     input:
     tuple val(meta_id), path(gfa_file)
 

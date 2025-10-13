@@ -18,6 +18,9 @@ include { GenerateContactMap } from './bin/Juicer.nf'
 include { runQuast as quastYahs } from './bin/Quast.nf'
 include { runBusco as buscoYahs } from './bin/Busco.nf'
 
+// step 4: multiQC
+include { multiQC } from './bin/mqc.nf'
+
 workflow {
     Channel
         .fromPath("${params.hifi_reads}/*.fastq.gz")
@@ -74,8 +77,6 @@ workflow {
         AlignHicReads.out.aligned_tuple
     )
     
-    ScaffoldWithYahs.out.scaffolded_assembly_tuple.view()
-
 /*
     GenerateContactMap(
         ScaffoldWithYahs.out.juicer_collection
@@ -97,24 +98,6 @@ workflow {
 }
 
 workflow.onComplete {
-    log.info """
-    =========================================
-    Pipeline execution summary
-    =========================================
-    Completed at: ${workflow.complete}
-    Duration    : ${workflow.duration}
-    Success     : ${workflow.success}
-    Exit status : ${workflow.exitStatus}
-    =========================================
-    """
-}
-
-workflow.onError {
-    log.error """
-    =========================================
-    Pipeline execution failed
-    =========================================
-    Error       : ${workflow.errorMessage}
-    =========================================
-    """
+    log.info "Pipeline completed"
+    multiQC("${projectDir}/${params.outdir}")
 }

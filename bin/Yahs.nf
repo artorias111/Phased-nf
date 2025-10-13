@@ -1,5 +1,5 @@
 process ScaffoldWithYahs {
-    publishDir 'results/Yahs', mode: 'symlink'
+    publishDir "results/Yahs/${params.specimen_id}.${meta_id}.yahs", mode: 'symlink'
     input:
     tuple val(meta_id), path(fasta), path(aligned_bam)
 
