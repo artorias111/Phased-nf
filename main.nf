@@ -97,7 +97,3 @@ workflow {
     )
 }
 
-workflow.onComplete {
-    log.info "Pipeline completed"
-    multiQC("${projectDir}/${params.outdir}")
-}
