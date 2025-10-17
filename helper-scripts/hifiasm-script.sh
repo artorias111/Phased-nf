@@ -1,0 +1,1 @@
+hifiasm -o Pbrachy -t 18 --h1 Zoarcid-hic-files/Pbrachy1-HiC_data/Pbra1_GGTTAGCT-GTACCACA_L004_R1_001.fastq.gz --h2 Zoarcid-hic-files/Pbrachy1-HiC_data/Pbra1_GGTTAGCT-GTACCACA_L004_R2_001.fastq.gz Zoarcid-hifi-files/Pbrachy_Revio_hifi/m84221_240830_191904_s2.Pbra1.398_398.fastq.gz |& tee hifiasm.stdout.log
