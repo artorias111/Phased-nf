@@ -67,6 +67,9 @@ workflow {
         [ "${params.specimen_id}_${meta}_fcs_cleaned", assembly ]
     })
 
+    // step 2.5 purge_dups if needed
+
+
     // Step 3: scaffold
 
     AlignHicReads(
