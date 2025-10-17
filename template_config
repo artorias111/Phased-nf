@@ -1,13 +1,21 @@
 params { 
     // required 
-    hifi_reads = null // Path to hifi reads directory, required
-    hic1 = null // Path to hic read pair 1, required
-    hic2 = null // Path to hic read pair 2, required
-    specimen_id = null // species id for eg. "dmaw12" for D. mawsoni, required
-	taxid = null // ncbi taxonomy id for fcs
+    hifi_reads = '/data2/work/Gadids/Bsai2_utq/Bsai2_utq_RevioHifi_Data'
+    hic1 = '/data2/work/Gadids/Bsai2_utq/Bsai2_utq_HiC_data/Bsai2_utq_R1.combined.fastq.gz'
+    hic2 = '/data2/work/Gadids/Bsai2_utq/Bsai2_utq_HiC_data/Bsai2_utq_R2.combined.fastq.gz'
+    specimen_id = 'Bsai2_utq'
+	taxid = 44932
 
     nthreads = 18
-    est_ref_size = 800000000 // for quast, i might remove this in the future
+    est_ref_size = 600000000 // for quast, i might remove this in the future
+
+	hifiasm_mode = 'normal' // hic for hi-c integrated hifiasm
+	purge_dups = 'on' // default is off
+
+
+
+
+
     
     // Tool paths
     yahs = '/data2/work/local/yahs' // Path to YaHS installation

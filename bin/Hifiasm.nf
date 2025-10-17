@@ -7,19 +7,26 @@ process runHifiasm {
     path hic2
 
     output:
-    path "${species_id}.hic.p_ctg.gfa", emit: p_gfa
-    path "${species_id}.hic.hap1.p_ctg.gfa", emit: hap1_gfa
-    path "${species_id}.hic.hap2.p_ctg.gfa", emit: hap2_gfa
+    path "${species_id}.*.p_ctg.gfa", emit: p_gfa
+    path "${species_id}.*.hap1.p_ctg.gfa", emit: hap1_gfa
+    path "${species_id}.*.hap2.p_ctg.gfa", emit: hap2_gfa
     path "hifiasm.kmer.log", emit: hifiasm_log
 
     script:
-    """
-    hifiasm -t ${params.nthreads} \
-    --h1 ${hic1} \
-    --h2 ${hic2} \
-    -o ${species_id} \
-    ${hifi_reads} |& tee hifiasm.kmer.log
-    """
+    if (params.hifiasm_mode == 'normal')
+        """
+        hifiasm -t ${params.nthreads} \
+        -o ${species_id} \
+        ${hifi_reads} |& tee hifiasm.kmer.log
+        """
+    else
+        """
+        hifism -t ${params.nthreads} \
+        -o ${species_id} \
+        --h1 ${hic1} \
+        --h2 ${hic2} \
+        ${hifi_reads} |& tee hifiasm.kmer.log
+        """
 }
 
 process gfa2fa { 
