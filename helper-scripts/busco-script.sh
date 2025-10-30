@@ -1,0 +1,1 @@
+busco -o /data2/nletien2/Pbrachy-assembly/analysis/BUSCO-analysis -i /data2/nletien2/Pbrachy-assembly/hifiasm-assembly/Pbrachy.hic.p_ctg.gfa -m geno -l actinopterygii_odb12 --download_path /data2/busco_June2024/busco_downloads -c 16 --offline
