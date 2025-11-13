@@ -1,0 +1,6 @@
+I ran this because my .bam file was incorrectly indexed per ChatGPT
+
+samtools sort -@ 16 -o correct.bam /data2/nletien2/Pbrachy-assembly/samblaster/Pbrachy.sam.out.bam
+
+#correct bam file
+/data2/nletien2/Pbrachy-assembly/samblaster
