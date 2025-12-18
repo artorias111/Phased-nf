@@ -28,7 +28,8 @@ integers = read_lengths.astype(int)
 
 
 matplotlib.pyplot.hist(integers, bins=500)
-matplotlib.pyplot.ylabel("Frequency")
-matplotlib.pyplot.xlabel("Read length")
+matplotlib.pyplot.ylabel("Read Length")
+matplotlib.pyplot.xlabel("Frequency")
 matplotlib.pyplot.title("Histogram of Hifi Read Lengths")
 matplotlib.pyplot.show()
+
